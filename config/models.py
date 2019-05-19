@@ -12,7 +12,9 @@ class Link(models.Model):
 
     title = models.CharField(max_length=50, verbose_name="标题")
     href = models.URLField(verbose_name="链接") # 默认长度为200
-    status = models.PositiveIntegerField(default=1, choices=zip(range(1,6),
+    status = models.PositiveIntegerField(default=STATUS_NORMAL, choices=STATUS_ITEMS,
+                                         verbose_name="状态")
+    weight = models.PositiveIntegerField(default=1, choices=zip(range(1,6),
                                         range(1,6)),verbose_name="权重",
                                         help_text="权重高展示顺序靠前")
 
@@ -22,7 +24,11 @@ class Link(models.Model):
     class Meta:
         verbose_name = verbose_name_plural = "友链"
 
-class SiderBar(models.Model):
+    def __str__(self):
+        return self.name
+
+
+class SideBar(models.Model):
     STATUS_SHOW = 1
     STATUS_HIDE = 0
     STATUS_ITEMS = (
@@ -47,5 +53,8 @@ class SiderBar(models.Model):
 
     class Meta:
         verbose_name = verbose_name_plural = "侧边栏"
+
+    def __str__(self):
+        return self.name
 
 
