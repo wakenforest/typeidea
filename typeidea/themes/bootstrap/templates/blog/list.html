@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+    <title>博客系统list</title>
+</head>
+<body>
+
+{% extends "./base.html" %}
+
+{% block title %}
+    {% if tag %}
+    标签列表页: {{ tag.name }}
+    {% elif category %}
+    分类列表页: {{ category.name }}
+    {% else %}
+    首页
+    {% endif %}
+{% endblock %}
+
+{% block main %}
+
+    <ul>
+        {% for post in post_list %}
+        <li>
+            <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
+            <div>
+                <span>作者:{{ post.owner.username }}</span>
+                <span>分类:{{ post.category.name }}</span>
+            </div>
+            <p>{{ post.desc }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+
+{% if page_obj %}
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
+
+<hr/>
+<div>底部分类:
+    {% for cate in navs %}
+    <a href="/category/{{ cate.id }}">{{ cate.name }}</a>
+    {% endfor %}
+</div>
+<hr/>
+
+<div>侧边栏展示:
+    {% for sidebar in sidebars %}
+        <h4>{{ sidebar.title }}</h4>>
+        {{ sidebar.content_html }}
+    {% endfor %}
+</div>
+
+</body>
+</html>

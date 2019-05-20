@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+
 # Create your models here.
 
 class Link(models.Model):
@@ -29,6 +31,17 @@ class Link(models.Model):
 
 
 class SideBar(models.Model):
+    DISPLAY_HTML = 1
+    DISPLAY_LATEST = 2
+    DISPLAY_HOT = 3
+    DISPLAY_COMMENT = 4
+    SIDE_TYPE = (
+        (DISPLAY_HTML, 'HTML'),
+        (DISPLAY_LATEST, '最新文章'),
+        (DISPLAY_HOT, '最热文章'),
+        (DISPLAY_COMMENT, '最近评论'),
+    )
+
     STATUS_SHOW = 1
     STATUS_HIDE = 0
     STATUS_ITEMS = (
@@ -57,4 +70,32 @@ class SideBar(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_all(cls):
+        return cls.objects.filter(status=cls.STATUS_SHOW)
 
+    @property
+    def content_html(self):
+        """直接渲染模板"""
+        from blog.models import Post
+        from comment.models import Comment
+
+        result = ''
+        if self.display_type == self.DISPLAY_HTML:
+            result = self.content
+        elif self.display_type == self.DISPLAY_LATEST:
+            context = {
+                'posts': Post.latest_posts()
+            }
+            result = render_to_string('config/blocks/sidebar_posts.html', context)
+        elif self.display_type == self.DISPLAY_HOT:
+            context = {
+                'posts': Post.hot_posts()
+            }
+            result = render_to_string('config/blocks/sidebar_posts.html', context)
+        elif self.display_type == self.DISPLAY_COMMENT:
+            context = {
+                'comments': Comment.objects.filter(status=Comment.STATUS_NORMAL)
+            }
+            result = render_to_string('config/blocks/sidebar_posts.html', context)
+        return result
