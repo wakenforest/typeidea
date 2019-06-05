@@ -10,7 +10,7 @@ from .models import Post, Category, Tag
 
 class PostInline(admin.TabularInline):
     fields = ('title', 'desc')
-    extra = 1
+    extra = 1       # 控制额外多几个
     model = Post
 
 @admin.register(Category, site=custom_site)
@@ -30,7 +30,7 @@ class CategoryAdmin(BaseOwnerAdmin):
 
 @admin.register(Tag, site=custom_site)
 class TagAdmin(BaseOwnerAdmin):
-    list_display = ('name', 'status','created_time')
+    list_display = ('name', 'status', 'created_time')
     fields = ('name', 'status')
 
     def save_model(self, request, obj, form, change):
@@ -103,8 +103,6 @@ class PostAdmin(BaseOwnerAdmin):
     filter_horizontal = ('tag',)
     # filter_vertical = ('tag',)
 
-
-
     def operator(self, obj):
         return format_html(
             '<a href="{}">编辑</a>',
@@ -125,12 +123,6 @@ class PostAdmin(BaseOwnerAdmin):
     def get_queryset(self, request):
         qs = super(PostAdmin, self).get_queryset(request)
         return qs.filter(owner = request.user)
-
-    class Media:
-        css = {
-            'all': ("https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css", ),
-        }
-        js = ('https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js', )
 
 
 

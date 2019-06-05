@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <title>博客系统detail</title>
-</head>
+
 <body>
 
 {% extends "./base.html" %}
 {% block title %} {{ post.title }} {% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+
 {% block main %}
     {% if post %}
     <h1>{{ post.title }}</h1>
     <div>
-        <span>分类:{{ post.category.name }}</span>
-        <span>作者:{{ post.owner.username }}</span>
+        <span>分类:{{ post.category.name }} &nbsp&nbsp </span>
+        <span>作者:{{ post.owner.username }} &nbsp&nbsp </span>
+        <span>创建日期:{{ post.created_time }} &nbsp&nbsp </span>
+        <span>访问数:{{ post.pv }} &nbsp&nbsp</span>
+        <span>标签:
+            {% for tag in post.tag.all %}
+                {{ tag.name }}
+            {% endfor %}
+        </span>
     </div>
     <hr/>
     <p>
-        {{ post.content }}
+        {% autoescape off %}
+        {{ post.content_html }}
+        {% endautoescape %}
     </p>
     {% endif %}
 {% endblock %}
