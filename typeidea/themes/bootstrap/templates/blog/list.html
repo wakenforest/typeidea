@@ -27,6 +27,7 @@
                         <a href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a>
                         {% endfor %}
                     </span>
+                    <span class="card-link">日期: {{ post.created_time }}</span>
                 </div>
                 <p>{{ post.desc }}</p>
             </div>
