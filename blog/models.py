@@ -58,6 +58,10 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @classmethod
+    def get_all(cls):
+        return cls.objects.filter(status=cls.STATUS_NORMAL)
 
 
 class Post(models.Model):

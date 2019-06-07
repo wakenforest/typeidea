@@ -61,6 +61,19 @@
                         </div>
                     </div>
                     {% endfor %}
+
+                    <p></p>
+
+                    <div class="card sidebar">
+                        <div class="card-body">
+                        <h4 class="card-title">标签们</h4>
+                            <p>
+                            {% for tag in tag_all %}
+                                <a href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a> &nbsp&nbsp
+                            {% endfor %}
+                            </p>
+                        </div>
+                    </div>
                 {% endblock %}
             </div>
         </div>

@@ -61,6 +61,9 @@ class CommonViewMixin:
             'sidebars': SideBar.get_all(),
         })
         context.update(Category.get_navs())
+        context.update({
+            'tag_all' : Tag.get_all() 
+        })
         return context
 
 class IndexView(CommonViewMixin, ListView):
@@ -135,11 +138,11 @@ class PostDetailView(CommonViewMixin, DetailView):
         elif increase_uv:
             Post.objects.filter(pk=self.object.id).update(uv=F('uv')+1)
 
-class PostListView(ListView):
-    queryset = Post.latest_posts()
-    paginate_by = 1
-    context_object_name = 'post_list'
-    template_name = 'blog/list.html'
+# class PostListView(ListView):
+#     queryset = Post.latest_posts()
+#     paginate_by = 1
+#     context_object_name = 'post_list'
+#     template_name = 'blog/list.html'
 
 class SearchView(IndexView):
     def get_context_data(self):
