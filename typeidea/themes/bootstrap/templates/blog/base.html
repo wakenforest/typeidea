@@ -39,7 +39,7 @@
             </form>
         </div>
     </nav>
-    <div class="jumbotron">
+    <div class="jumbotron" style="height: 220px;">
         <h1 class="display-4">Wakenforest</h1>
         <p class="lead">醒来的森林的想入非非</p>
     </div>
@@ -47,11 +47,11 @@
 
 <div class="container main">
         <div class="row">
-            <div class="col-9 post-list">
+            <div class="col-8 post-list">
                 {% block main %}
                 {% endblock %}
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 {% block sidebar %}
                     {% for sidebar in sidebars %}
                     <div class="card sidebar">
@@ -84,4 +84,6 @@
 </footer>
 
 </body>
+
+
 </html>
