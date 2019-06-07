@@ -60,13 +60,14 @@
                         <p>{{ sidebar.content_html }}</p>
                         </div>
                     </div>
+                    <p></p>
                     {% endfor %}
 
                     <p></p>
 
                     <div class="card sidebar">
                         <div class="card-body">
-                        <h4 class="card-title">标签们</h4>
+                        <h4 class="card-title">热门标签</h4>
                             <p>
                             {% for tag in tag_all %}
                                 <a href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a> &nbsp&nbsp
