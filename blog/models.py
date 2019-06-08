@@ -133,6 +133,9 @@ class Post(models.Model):
 
     @classmethod
     def hot_posts(cls):
-        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+        temp_list = cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+        if( len(temp_list) > 8 ):
+            temp_list = temp_list[0:8]
+        return temp_list
 
 
