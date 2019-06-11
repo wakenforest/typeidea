@@ -23,8 +23,19 @@ from blog.views import (
     PostDetailView,TagView,IndexView,CategoryView,
     SearchView,AuthorView
 )
+#from blog.apis import post_list, PostList
+from blog.apis import PostViewSet, CategoryViewSet
+from rest_framework.routers import DefaultRouter
+from django.urls import include
 
+from rest_framework.documentation import include_docs_urls
+from django.conf import settings
 
+router = DefaultRouter()
+router.register(r'post', PostViewSet, base_name='api-post')
+router.register(r'category',CategoryViewSet, base_name='api-category')
+
+app_name='[api-post]'
 urlpatterns = [
     #url(r'^$', post_list, name='index'),
     #url(r'^category/(?P<category_id>\d+)/$', post_list, name='category-list'),
@@ -44,4 +55,16 @@ urlpatterns = [
     url(r'^links/$', LinkListView.as_view(), name='links'),
     url(r'^ajax_list/$', ajax_list, name='ajax-list'),
     url(r'^ajax_dict/$', ajax_dict, name='ajax-dict'),
+
+    # url(r'^api/post/', post_list, name='post-list'),
+    #url(r'^api/post/', PostList.as_view(), name='post-list'),
+    #url(r'^api/', include( (router.urls,'api'), namespace="api")),
+    url(r'^api/', include(router.urls)),
+    url(r'^api/docs/', include_docs_urls(title='wakenforest apis')),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls) )
+    ] + urlpatterns
