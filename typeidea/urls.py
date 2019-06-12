@@ -63,8 +63,8 @@ urlpatterns = [
     url(r'^api/docs/', include_docs_urls(title='wakenforest apis')),
 ]
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls) )
-    ] + urlpatterns
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns = [
+#         url(r'^__debug__/', include(debug_toolbar.urls) )
+#     ] + urlpatterns
