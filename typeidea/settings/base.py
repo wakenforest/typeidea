@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'config',
     'comment',
     'rest_framework',
+    'dict_word',
 
     'django.contrib.admin',
     'django.contrib.auth',

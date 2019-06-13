@@ -26,16 +26,20 @@ from blog.views import (
 #from blog.apis import post_list, PostList
 from blog.apis import PostViewSet, CategoryViewSet
 from rest_framework.routers import DefaultRouter
-from django.urls import include
+from django.urls import include,path
 
 from rest_framework.documentation import include_docs_urls
 from django.conf import settings
+
+from dict_word.views import dict_word_index, dict_word_spider 
 
 router = DefaultRouter()
 router.register(r'post', PostViewSet, base_name='api-post')
 router.register(r'category',CategoryViewSet, base_name='api-category')
 
 app_name='[api-post]'
+app_name='dict_word'
+
 urlpatterns = [
     #url(r'^$', post_list, name='index'),
     #url(r'^category/(?P<category_id>\d+)/$', post_list, name='category-list'),
@@ -61,6 +65,8 @@ urlpatterns = [
     #url(r'^api/', include( (router.urls,'api'), namespace="api")),
     url(r'^api/', include(router.urls)),
     url(r'^api/docs/', include_docs_urls(title='wakenforest apis')),
+    #url(r'dict_word/$', dict_word_index, name='dict-word-index'),
+    path('dict_word/', include('dict_word.urls', namespace='dict_word')),
 ]
 
 # if settings.DEBUG:

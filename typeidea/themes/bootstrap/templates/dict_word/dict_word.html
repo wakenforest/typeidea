@@ -1,0 +1,22 @@
+<h3>dict</h3>
+<form method="POST" class="form-horizontal" role='form' action="{% url 'dict_word:dict_word_spider' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+   <div>
+       <button type="submit">submmit</button>
+   </div>
+</form>
+
+<p></p>
+
+{% if youdao_result %}
+<div>
+    {% for res in youdao_result %}
+        {{ res.text }}
+    {% endfor %}
+</div>
+{% else %}
+
+<div>尚无查询</div>
+
+{% endif %}
