@@ -7,6 +7,7 @@ from .forms import SearchForm
 
 import io
 import sys
+from bs4 import BeautifulSoup
 
 # Create your views here.
 
@@ -35,7 +36,11 @@ def dict_word_spider(request):
         if form.is_valid():
             to_be_searched = form.cleaned_data.get('word')
             result.word = to_be_searched
-            result.text = search_word(to_be_searched)
+            tmp = search_word(to_be_searched)
+            result.text_ce = tmp[0]
+            result.text_ec = tmp[1]
+            result.text_cj = tmp[2]
+            result.text_jc = tmp[3]
             result.save()
 
         return HttpResponseRedirect('/dict_word/')
@@ -60,39 +65,28 @@ def getHTMLText(url):
     except:
         return "产生异常"
 
-def anaText(text):
-    result = ''
+def trans_youdao(text):
+    soup = BeautifulSoup(text, 'html.parser')
+    a = soup.select('div[class="trans-container"] p[class="wordGroup"] a')
+    #b = soup.select('p[class="wordGroup"]')
+    trans_res = ""
+    trans_list = []
+    for el in a:
+        trans_list.append( el.get_text()  )
+        trans_res = "\n".join(trans_list)
+    return trans_list
 
-    pat = re.compile('<span class="pronounce">英.*?<span class="phonetic">(.*?)</span>',re.S)
-    grp = pat.search(text)
-    if grp:
-        result = result + grp[1]
-
-    pat = re.compile('<span class="pronounce">美.*?<span class="phonetic">(.*?)</span>', re.S)
-    grp = pat.search(text)
-    if grp:
-        result = result + '   ' + grp[1]
-
-    pat = re.compile('<div class="trans-container">(.*?)</div>',re.S)
-    grp = pat.search(text)
-    if grp:
-        result = result + grp[1]
-
-    return result
-
-def anaText_hj(text):
-    result = ''
-    pat = re.compile('<div class="pronounces">.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span class="pronounce-value-jp">',re.S)
-    grp = pat.search(text)
-    if grp:
-        result = result + grp[1]
-
-    pat = re.compile('<div class="simple">(.*?)</div>',re.S)
-    grp = pat.search(text)
-    if grp:
-        result = result + grp[1]
-
-    return result
+def trans_hj(text):
+    soup = BeautifulSoup(text, 'html.parser')
+    a = soup.select('section[class="detail-groups"] p')
+    trans_res = ""
+    trans_list = []
+    for el in a:
+        tmpTxt = el.get_text().strip()
+        trans_list.append( tmpTxt  )
+        trans_res = "\n".join(trans_list)
+    #print(trans_res)
+    return trans_list
 
 def search_word(word):
 
@@ -101,34 +95,36 @@ def search_word(word):
     title = '英->中：<p></p>'
     url = "http://dict.youdao.com/w/eng/" + word + "/#keyfrom=dict2.index"
     text = getHTMLText(url)
-    result.append( title + anaText(text) )
+    result.append( trans_youdao(text) )
 
     title = '中->英：<p></p>'
     url = "http://dict.youdao.com/w/" + word + "/#keyfrom=dict2.index"
     text = getHTMLText(url)
-    result.append( title + anaText(text) )
+    result.append(trans_youdao(text))
 
-    result_hj = ""
     title = '\n 日->中：<p></p>'
     url = "https://dict.hjenglish.com/jp/jc/" + word
-    #print(url)
     text = getHTMLText(url)
-    result_hj =  title + anaText_hj(text)
-    result.append( result_hj )
+    tmp = trans_hj(text)
+    result.append(tmp)
 
     title = '中->日：<p></p>'
     url = "https://dict.hjenglish.com/jp/cj/" + word
-    #print(url)
     text = getHTMLText(url)
-    result_hj =  title +  anaText_hj(text)
-    result.append(result_hj)
+    tmp = trans_hj(text)
+    result.append(tmp)
 
-    result_str = "<hr>".join(result)
+
+    #sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+    # for kkk in result:
+    #     print(kkk)
+
+    # result_str = "<hr>".join(result)
     
-    with open("myfirst.html", "w", encoding='utf-8') as f:
-        f.write(result_str)
+    # with open("myfirst.html", "w", encoding='utf-8') as f:
+    #     f.write(result_str)
 
-    return result_str
+    return result
 
     # with open("2.html", "w", encoding='utf-8') as f:
     #     f.write(result_str)
