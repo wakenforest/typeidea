@@ -20,7 +20,7 @@
             </nav>
 
             <div class="jumbotron" style="height: 220px;">
-                <h1 class="display-4">Wakenforest Complex Dictionary</h1>
+                <h1 class="display-4">Wakenforest Simple Dictionary</h1>
                 <!-- <p class="lead">醒来的森林的混合字典</p> -->
             </div>
         </div>
@@ -29,6 +29,13 @@
             <form method="POST" class="form-horizontal" role='form' action="{% url 'dict_word:dict_word_spider' %}">
             {% csrf_token %} {{ form }}
                 <button class="btn btn-outline-success" type="submit">查询</button>
+                
+                &nbsp&nbsp&nbsp
+                {% if youdao_result %} 
+                    {% for res in youdao_result %}
+                        被查询单词：{{res.word}}
+                    {% endfor %}
+                {% endif %}
             <!-- {{ form.as_p }}
                 <button type="submit">submmit</button> -->
             </form>
@@ -38,7 +45,6 @@
             {% if youdao_result %}
             <div>
                 {% for res in youdao_result %}
-                    <p>被查询单词：{{res.word}} </p>
 
                     <div class="row">
                         <div class="col-3">
@@ -62,10 +68,7 @@
                         <div class="col-3">
                             <div class="alert alert-danger" role="alert">中日：</div>
                             <div >
-                                <!-- {% for item in res.text_cj %}
-                                   <li> {{ item }} </li>
-                                {% endfor %} -->
-                                <code>{{ res.text_cj }} </code>   
+                                {{ res.text_cj }}
                             </div>
                         </div>
 

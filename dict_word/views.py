@@ -2,17 +2,19 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
-from .models import YoudaoResult
+from .models import YoudaoResult, ContList
 from .forms import SearchForm
 
 import io
 import sys
 from bs4 import BeautifulSoup
 
+
 # Create your views here.
 
 def dict_word_index(request):
     youdao_result = YoudaoResult.get_all()
+    #text_add = ContList.get_all()
     form = SearchForm()
     context = { 
         'youdao_result': youdao_result,
@@ -32,17 +34,22 @@ def dict_word_spider(request):
         YoudaoResult.objects.all().delete()
 
         result = YoudaoResult()
+        #text_add = ContList()
         form = SearchForm(request.POST)
         if form.is_valid():
             to_be_searched = form.cleaned_data.get('word')
             result.word = to_be_searched
             tmp = search_word(to_be_searched)
-            result.text_ce = tmp[0]
-            result.text_ec = tmp[1]
+            result.text_ec = tmp[0]
+            result.text_ce = tmp[1]
             result.text_cj = tmp[2]
             result.text_jc = tmp[3]
+            # text_add = tmp[3]
+            
             result.save()
+            # text_add.save()
 
+        #return render(request, 'dict_word/dict_word.html', context=context)
         return HttpResponseRedirect('/dict_word/')
 
     else:
@@ -73,8 +80,22 @@ def trans_youdao(text):
     trans_list = []
     for el in a:
         trans_list.append( el.get_text()  )
-        trans_res = "\n".join(trans_list)
-    return trans_list
+        trans_res = ", ".join(trans_list)
+    return trans_res
+
+def trans_youdao_ec(text):
+    soup = BeautifulSoup(text, 'html.parser')
+    trans_res = ""
+    trans_list = []
+    a = soup.select('div[class="trans-container"] ul')
+    res = re.sub('\n', '  ', a[0].get_text() )
+    trans_list.append( res  )
+    trans_res = "\n".join(trans_list)
+    #a = soup.find(class_="trans-container")
+    # if a:
+    #     trans_list.append( a.get_text()  )
+
+    return trans_res
 
 def trans_hj(text):
     soup = BeautifulSoup(text, 'html.parser')
@@ -84,23 +105,41 @@ def trans_hj(text):
     for el in a:
         tmpTxt = el.get_text().strip()
         trans_list.append( tmpTxt  )
-        trans_res = "\n".join(trans_list)
+        trans_res = "\r\t".join(trans_list)
     #print(trans_res)
-    return trans_list
+    return trans_res
+
+def check_contain_eng(check_str):
+    my_re = re.compile(r'[A-Za-z]',re.S)
+    res = re.findall(my_re,check_str)
+    if len(res):
+        return True
+    else:
+        return False
 
 def search_word(word):
 
     result = []
+    if check_contain_eng(word):
+        isCh = False
+    else:
+        isCh = True
 
     title = '英->中：<p></p>'
-    url = "http://dict.youdao.com/w/eng/" + word + "/#keyfrom=dict2.index"
-    text = getHTMLText(url)
-    result.append( trans_youdao(text) )
+    if isCh==False:
+        url = "http://dict.youdao.com/w/eng/" + word + "/#keyfrom=dict2.index"
+        text = getHTMLText(url)
+        result.append( trans_youdao_ec(text) )
+    else:
+        result.append('This word is Chinese')
 
     title = '中->英：<p></p>'
-    url = "http://dict.youdao.com/w/" + word + "/#keyfrom=dict2.index"
-    text = getHTMLText(url)
-    result.append(trans_youdao(text))
+    if isCh:
+        url = "http://dict.youdao.com/w/" + word + "/#keyfrom=dict2.index"
+        text = getHTMLText(url)
+        result.append(trans_youdao(text))
+    else:
+        result.append('This word is English')
 
     title = '\n 日->中：<p></p>'
     url = "https://dict.hjenglish.com/jp/jc/" + word
@@ -125,9 +164,3 @@ def search_word(word):
     #     f.write(result_str)
 
     return result
-
-    # with open("2.html", "w", encoding='utf-8') as f:
-    #     f.write(result_str)
-
-    # with open("3.html", "w", encoding='utf-8') as f:
-    #     f.write(text)

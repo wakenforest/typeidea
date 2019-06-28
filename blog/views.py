@@ -11,8 +11,6 @@ from django.core.cache import cache
 
 from django.http import HttpResponse
 
-
-
 # Create your views here.
 
 # def post_list(request, category_id=None, tag_id=None):
